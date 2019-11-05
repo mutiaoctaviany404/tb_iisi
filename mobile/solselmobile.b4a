@@ -1,0 +1,166 @@
+﻿Version=6
+NumberOfModules=16
+Module1=info_utama
+Module2=galeri_ut
+Module3=pencarian_travel
+Module4=lokasi
+Module5=info_travel
+Module6=info_des
+Module7=pencarian_des
+Module8=pencarian_nama
+Module9=lokasi_des
+Module10=lokasi_travel
+Module11=lokasi_trav
+Module12=home
+Module13=addbooking
+Module14=Starter
+Module15=booking
+Module16=login
+Build1=Default,b4a.example
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: http://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="14"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~'End of default text.~\n~
+IconFile=
+NumberOfFiles=11
+File1=addbooking.bal
+File2=gallery.bal
+File3=home.bal
+File4=informasi_travel.bal
+File5=informasi_utama.bal
+File6=login.bal
+File7=lokasi.bal
+File8=pencarian_des.bal
+File9=pencarian_nama.bal
+File10=pencarian_travel.bal
+File11=splash.bal
+NumberOfLibraries=9
+Library1=core
+Library2=animation
+Library3=gps
+Library4=http
+Library5=httputils2
+Library6=json
+Library7=network
+Library8=dateutils
+Library9=sql
+@EndOfDesignText@
+#Region  Project Attributes 
+	#ApplicationLabel: GIS TOURISM PACKAGE SOLSEL
+	#VersionCode: 1
+	#VersionName: 
+	'SupportedOrientations possible values: unspecified, landscape or portrait.
+	#SupportedOrientations: unspecified
+	#CanInstallToExternalStorage: False
+#End Region
+
+#Region  Activity Attributes 
+	#FullScreen: False
+	#IncludeTitle: True
+#End Region
+
+Sub Process_Globals
+	
+	Dim Server="http://192.168.100.13/wisatasolsel/mobile/" As String 'variable untuk koneksi ke database
+		
+	Dim username_login As String
+	Dim role_login As String
+     
+	Dim tmSplash As Timer 'timer untuk animasi splash screen
+End Sub
+
+Sub Globals
+	'These global variables will be redeclared each time the activity is created.
+	'These variables can only be accessed from this module.
+	Private Login_Case = "Login_Case" As String
+
+	Private Label2 As Label
+	Private Label3 As Label
+	Private EditText1 As EditText
+	Private EditText2 As EditText
+
+	Private text_Username As String
+	Private text_Password As String
+	
+	Private ImageView1 As ImageView
+	
+	Private Label1 As Label
+	
+	Private Button1 As Button
+End Sub
+
+Sub Activity_Create(FirstTime As Boolean)
+	     StartActivity("Main")	
+		If FirstTime Then 'jika aplikasi pertama diaktifkan
+		Activity.LoadLayout("splash")
+		AnimSplash 'Panggil function animasi splash screen
+		tmSplash.Initialize("tmSplash",3500) 'panggil event timer tpSplash dengan interval waktu 4s
+		tmSplash.Enabled = True 'aktifkan timer
+	Else		
+		Activity.RemoveAllViews 'Hapus Design pada layout
+		Activity.LoadLayout("login") 'Set layout lyHome
+		DoEvents 'membuat proses terlihat
+	End If
+	 
+End Sub
+
+Sub Activity_Resume
+
+End Sub
+
+Sub Activity_Pause (UserClosed As Boolean)
+
+End Sub
+
+Sub tmSplash_Tick
+	tmSplash.Enabled = False 'disable timer
+	Activity.RemoveAllViews 'Hapus Design pada layout
+	Activity.LoadLayout("login") 'load layout lyHome
+End Sub
+
+Sub AnimSplash()
+	
+End Sub
+
+Sub cek_login
+	ProgressDialogShow("Loading...")	
+	text_Username = EditText1.Text
+	text_Password = EditText2.Text
+	  
+	ExecuteRemoteQuery("SELECT * FROM users WHERE upper(user_id)=upper('"&text_Username&"') and password='"&text_Password&"'","Login_Case")
+End Sub
+
+Sub ExecuteRemoteQuery(Query As String, JobName As String)
+	Dim Job As HttpJob
+	Job.Initialize(JobName, Me)
+	Job.PostString(""&Server&"json2.php",Query)
+End Sub
+
+Sub JobDone(Job As HttpJob)
+	ProgressDialogHide
+	If Job.Success Then
+		Dim res As String
+		res = Job.GetString
+		Log("Response :"& res)
+		Dim parser As JSONParser
+		parser.Initialize(res)
+		Select Job.JobName
+			Case Login_Case
+				Dim m As Map
+				m = parser.NextObject
+				role_login = m.Get("role")
+				username_login = m.Get("user_id")
+				
+				If role_login == 0 Then
+				  Msgbox("Username dan Password salah ", "Login gagal")  
+				Else
+				  Msgbox("Anda login sebagai " & EditText1.Text & CRLF &"Selamat Datang! ", "Login Sukses")
+				  StartActivity("home")
+				End If
+				
+		End Select
+	End If
+End Sub
+
+
+Sub Button1_Click
+	cek_login
+	'StartActivity("home")
+End Sub
