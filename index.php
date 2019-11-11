@@ -146,43 +146,85 @@ include("connect.php");
                       </ul>
                   </li>
 				   <li class="sub">
-                      <a onclick="" style="cursor:pointer;background:none"><i class="fa fa-thumb-tack"></i>Souvenir Around You</a>
+                      <a onclick="" style="cursor:pointer;background:none"><i class="fa fa-thumb-tack"></i>Search By District And Souvenir</a>
                       <ul class="treeview-index">
-                        <<li style="margin-top:10px"><input id="inputradius" type="range" name="inputradius" data-highlight="true" min="1" max="10" value="1"></li>                             
+                        <!-- <li style="margin-top:10px"><input id="inputradius" type="range" name="inputradius" data-highlight="true" min="1" max="10" value="1"></li>                             
                         <li><a onclick="init();hotel_sekitar_user();" style="cursor:pointer;background:none">Search</a></li> -->
                          <div class=" form-group" style="color: white;" > <!-- <br> -->
-                          < <label>Based On Radius</label><br> -->
-                          <label for="inputradius" style="font-size: 10pt";>Radius : </label>
-                          <label  id="nilai"  style="font-size: 10pt";>0</label> m
-                          
-                          <input  type="range" onchange="init();hotel_sekitar_user();cekkk();" id="inputradius" name="inputradius" data-highlight="true" min="0" max="20" value="0" >
-                          <script>
-						  
-                            function cekkk()
-                            {
-								require '../connect.php';
-
-$tipe = $_GET["tipe"];		// Cari berdasarkan apa
-$nilai = $_GET["nilai"];	// Isi yang dicari
-
-	$querysearch	="SELECT souvenir.id, souvenir.name, st_x(st_centroid(souvenir.geom)) as lon, st_y(st_centroid(souvenir.geom)) as lat from hotel left join souvenir_gallery on souvenir_gallery.id_souvenir = souvenir.id_souvenir where  LOWER(souvenir_gallery.id_souvenir) like '%' || LOWER('$nilai') || '%'";
-$hasil=pg_query($querysearch);
-while($baris = pg_fetch_array($hasil))
-	{
-		  $id=$baris['id'];
-		  $name=$baris['name'];
-		  $lat=$baris['lat'];
-		  $lng=$baris['lon'];
-		  $dataarray[]=array('id'=>$id,'name'=>$name, 'lng'=>$lng, 'lat'=>$lat);
-	}
-echo json_encode ($dataarray);
-	}
-                          </script>
+                          <!-- <label>Based On Radius</label><br> -->
+                          <label for="inputradius" style="font-size: 10pt";>Souvenir : </label>
+                          <input  type="text" id="souvenirmutia" name="souvenirmutia" class="form-control">
                         </div>
-
+						<div class=" form-group" style="color: white;" > <!-- <br> -->
+                          <!-- <label>Based On Radius</label><br> -->
+                          <label for="inputradius" style="font-size: 10pt";>District : </label>
+						  <select id="kecamatanmutia" class="form-control">
+							<?php
+								$sql = "select * from district";
+								$hasil = pg_query($sql);
+								while($w = pg_fetch_assoc($hasil)){
+									echo '<option value="'.$w['id'].'"> '.$w['name'].' </option>';
+								}
+							?>
+						  </select>
+                        </div>
+						<button type="button" class="btn btn-default" value="caripaket" onclick="caripaketmutia();"><i class="fa fa-search"></i></button>
                       </ul>                     
                   </li>
-				   
+				  
+				   </li>
+				   <li class="sub">
+                      <a onclick="" style="cursor:pointer;background:none"><i class="fa fa-thumb-tack"></i>Search By District And Restaurant</a>
+                      <ul class="treeview-index">
+                        <!-- <li style="margin-top:10px"><input id="inputradius" type="range" name="inputradius" data-highlight="true" min="1" max="10" value="1"></li>                             
+                        <li><a onclick="init();hotel_sekitar_user();" style="cursor:pointer;background:none">Search</a></li> -->
+                         <div class=" form-group" style="color: white;" > <!-- <br> -->
+                          <!-- <label>Based On Radius</label><br> -->
+                          <label for="inputradius" style="font-size: 10pt";>Restaurant : </label>
+                          <input  type="text" id="reastaurantyori" name="restaurantyori" class="form-control">
+                        </div>
+						<div class=" form-group" style="color: white;" > <!-- <br> -->
+                          <!-- <label>Based On Radius</label><br> -->
+                          <label for="inputradius" style="font-size: 10pt";>District : </label>
+						  <select id="kecamatanyori" class="form-control">
+							<?php
+								$sql = "select * from district";
+								$hasil = pg_query($sql);
+								while($w = pg_fetch_assoc($hasil)){
+									echo '<option value="'.$w['id'].'"> '.$w['name'].' </option>';
+								}
+							?>
+						  </select>
+                        </div>
+						<button type="button" class="btn btn-default" value="caripaket" onclick="caripaketyori();"><i class="fa fa-search"></i></button>
+                      </ul>                     
+                  </li>
+				  <li class="sub">
+                      <a onclick="" style="cursor:pointer;background:none"><i class="fa fa-thumb-tack"></i>Search By District And Workship_Place</a>
+                      <ul class="treeview-index">
+                        <!-- <li style="margin-top:10px"><input id="inputradius" type="range" name="inputradius" data-highlight="true" min="1" max="10" value="1"></li>                             
+                        <li><a onclick="init();hotel_sekitar_user();" style="cursor:pointer;background:none">Search</a></li> -->
+                         <div class=" form-group" style="color: white;" > <!-- <br> -->
+                          <!-- <label>Based On Radius</label><br> -->
+                          <label for="inputradius" style="font-size: 10pt";>Workship_Place : </label>
+                          <input  type="text" id="workshipangga" name="workshipangga" class="form-control">
+                        </div>
+						<div class=" form-group" style="color: white;" > <!-- <br> -->
+                          <!-- <label>Based On Radius</label><br> -->
+                          <label for="inputradius" style="font-size: 10pt";>District : </label>
+						  <select id="kecamatanangga" class="form-control">
+							<?php
+								$sql = "select * from district";
+								$hasil = pg_query($sql);
+								while($w = pg_fetch_assoc($hasil)){
+									echo '<option value="'.$w['id'].'"> '.$w['name'].' </option>';
+								}
+							?>
+						  </select>
+                        </div>
+						<button type="button" class="btn btn-default" value="caripaket" onclick="caripaketangga();"><i class="fa fa-search"></i></button>
+                      </ul>                     
+                  </li>
     </ul>
               <!-- sidebar menu end-->
   </div>
@@ -278,10 +320,7 @@ echo json_encode ($dataarray);
     background-image: url("http://localhost/wisatasolsel/assets/img/sov.png");
     background-repeat: no-repeat;
     padding-left: 30px;
-    background-size: 40%;
-    background-position-y: 20%;  
-  }
-  .class5
+										  .class5
   {
     background-image: url("http://localhost/wisatasolsel/assets/img/trav.png");
     background-repeat: no-repeat;
@@ -473,6 +512,9 @@ echo json_encode ($dataarray);
   <script type="text/javascript" src="assets/js/bootstrap-daterangepicker/moment.min.js"></script>
   <script type="text/javascript" src="assets/js/bootstrap-timepicker/js/bootstrap-timepicker.js"></script>
   <script src="assets/js/advanced-form-components.js"></script>  
+  <script src="mutia.js"></script>  
+  <script src="yori.js"></script> 
+   <script src="angga.js"></script> 
   </body>
 </html>
 
